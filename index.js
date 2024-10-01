@@ -41,7 +41,19 @@ app.get('/datosApp/:idAccess', async (req, res) => { // Asegúrate de que idAcce
 
             // Verificar si el idAccess en los datos coincide con el idAccess pasado en la URL
             if (data.idAccess === idAccess) {
-                res.json(data);  // Devuelve los datos si el idAccess coincide
+                const coleccion1Snapshot = await db.collection('planes').get();
+                const coleccion2Snapshot = await db.collection('anuncios').get();
+
+                // Extraer los datos de las colecciones
+                const coleccion1Data = coleccion1Snapshot.docs.map(doc => doc.data());
+                const coleccion2Data = coleccion2Snapshot.docs.map(doc => doc.data());
+
+
+                res.json({
+                    datosApp: data,
+                    planes: coleccion1Data,
+                    anuncios: coleccion2Data
+                });
             } else {
                 res.status(403).send('Acceso denegado: idAccess no coincide.');
             }
